@@ -94,6 +94,12 @@ def page1():
         " and soft skills that will likely be needed for the role:")
         st.button("Submit")
     
+    # Submit data for employee profile
+    left, center, right = st.columns([1, 2, 1])
+    with center:
+        if st.button("Generate Evaluation"):
+            st.session_state.current_page = "page_2"
+            st.rerun()
 
 def page2():
     if st.button("Employee Evaluation"):
@@ -133,9 +139,12 @@ def page2():
     cols = st.columns(num_jobs)
 
     for i in range(num_jobs):
-        with cols[i]:
-            st.markdown(f"<div style='text-align: center;'>Job #{i+1}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{job_percentages[i]}%</div>", unsafe_allow_html=True)
+        #with cols[i]:
+            #st.markdown(f"<div style='text-align: center;'>Job #{i+1}</div>", unsafe_allow_html=True)
+            #st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{job_percentages[i]}%</div>", unsafe_allow_html=True)
+        with st.expander(f"Job #{i+1} | {job_percentages[i]}% Match"):
+            st.write("**Description:**")
+            st.markdown(f"THIs GUY FITS PERFECT")
 
 if __name__ == '__main__':
     if "current_page" not in st.session_state:
