@@ -85,6 +85,7 @@ def page2():
         st.session_state.current_page = "page_1"
         st.rerun()
     with st.container(border=True):
+        st.write(f"Description here:")
 
 if __name__ == '__main__':
     page2()
