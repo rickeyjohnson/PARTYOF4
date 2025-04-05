@@ -83,9 +83,20 @@ def page1():
     # Left side content
     with left_col:
         st.header("Employee Info")
-        st.write("Performance/Project Evaluation | **Status: Complete**")
-        st.write("Peer Reviews | **Status: Complete**")
-        st.write("Self Assessment | **Status: Complete**")
+        performance_status = "Requested"
+        if st.session_state.get("performance_done", False):
+            performance_status = "Completed"
+        st.write(f"Performance/Project Review | **Status: {performance_status}**")
+
+        peer_status = "Requested"
+        if st.session_state.get("peer_done", False):
+            performance_status = "Completed"
+        st.write(f"Peer Reviews | **Status: {peer_status}**")
+
+        self_status = "Requested"
+        if st.session_state.get("self_done", False):
+            performance_status = "Completed"
+        st.write(f"Peer Reviews | **Status: {self_status}**")
 
     # Right side content
     with right_col:
