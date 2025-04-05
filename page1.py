@@ -1,30 +1,5 @@
 import streamlit as st
-from data.employee_db import create_employee, get_employee
-from reviews.performance_review import performance_review_chat
-from reviews.self_assessment import self_assessment_chat
-from reviews.peer_review import peer_review_chat
-from fake_ai_api import generate_employee_profile_summary, get_job_match_score
-from data.job_listing import get_all_jobs
-
-st.set_page_config(
-    page_title="Employee Evaluation",
-    layout="wide",  # Use "wide" layout for full width
-    initial_sidebar_state="collapsed"  # Optional: start sidebar collapsed
-)
-
-EMPLOYEE_ID = "12345"
-
-if "employee_created" not in st.session_state:
-        create_employee(
-            employee_id=EMPLOYEE_ID,
-            name="John Doe",
-            role="Software Developer",
-            department="Engineering",
-            skills=["Python", "Machine Learning", "Data Analysis"],
-            years_experience=5,
-            pfp_url="https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"
-        )
-        st.session_state.employee_created = True
+from data.employee_db import get_employee
 
 def page1(employee_id):
     # Top bar with title
@@ -183,7 +158,3 @@ def page1(employee_id):
                     st.success(f"Job added: {job_input.strip()}")
                 else:
                     st.error("Please enter a job description before submitting.")
-
-
-if __name__ == '__main__':
-    page1(EMPLOYEE_ID)
