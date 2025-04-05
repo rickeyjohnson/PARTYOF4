@@ -79,7 +79,7 @@ def generate_job_match_prompt(employee_profile: str, job: dict) -> str:
 
 def get_job_match_score(employee_profile: str, job: dict) -> dict:
     prompt = generate_job_match_prompt(employee_profile, job)
-    llm_response = fake_call_llm(prompt)
+    llm_response = call_llm(prompt)
 
     # Extract match percentage
     percentage_match = re.search(r"Match Percentage: (\d+)%", llm_response)
