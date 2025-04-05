@@ -4,9 +4,25 @@ def page1():
     if st.button("Go to Page 2"):
         st.session_state.current_page = "page_2"
         st.rerun()
-    st.title("Page 1 Content")
-    st.write("This is the content of the first page.")
-    
+    st.title("Employee Evaluation")
+
+    # Create two columns
+    left_col, right_col = st.columns(2)
+
+    # Left side content
+    with left_col:
+        st.header("Employee Info")
+        st.write("Performance/Project Evaluation | **Status: Complete**")
+        st.write("Peer Reviews | **Status: Complete**")
+        st.write("Self Assessment | **Status: Complete**")
+
+    # Right side content
+    with right_col:
+        st.header("Job Openings")
+        message = st.text_area("Write your message here. Be sure to include technical"+ 
+        " and soft skills that will likely be needed for the role:")
+        st.button("Submit")
+        
 
 def page2():
     if st.button("Go back to Page 1"):
