@@ -3,15 +3,15 @@ from employee_db import create_employee, get_employee
 from reviews.performance_review import performance_review_chat
 from reviews.self_assessment import self_assessment_chat
 from reviews.peer_review import peer_review_chat
-from fake_ai_api import generate_employee_profile_summary  # Import AI summary function
+from fake_ai_api import generate_employee_profile_summary
 
 EMPLOYEE_ID = "12345"
 
-def rickey_page(employee_id):
-    # Initialize
+
+def init_employee():
     if "employee_created" not in st.session_state:
         create_employee(
-            employee_id=employee_id,
+            employee_id=EMPLOYEE_ID,
             name="John Doe",
             role="Software Developer",
             department="Engineering",
@@ -20,62 +20,27 @@ def rickey_page(employee_id):
         )
         st.session_state.employee_created = True
 
-    # App UI
-    st.sidebar.title("📋 Navigation")
+
+def show_sidebar():
     page = st.sidebar.radio("Go to", ["🏠 Home", "👨‍💼 Performance Review", "🧠 Self Assessment", "🤝 Peer Review"])
-
-    st.title("💼 Internal Talent Review Portal")
-
-    if page == "🏠 Home":
-        st.subheader("Welcome to your dashboard")
-        
-        # Check if all responses exist
-        all_complete = st.session_state.get("performance_done", False) and \
-                        st.session_state.get("self_done", False) and \
-                        st.session_state.get("peer_done", False)
-        
-        if not all_complete:
-            st.info("Please complete all 3 reviews using the sidebar.")
-        else:
-            st.success("✅ All reviews completed!")
-            st.markdown("### 📄 Full Review Summary")
-
-            # Combine all responses into a single string
-            combined_responses = {
-                "performance_review": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("performance_responses", {}).items()]),
-                "self_assessment": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("self_assessment_responses", {}).items()]),
-                "peer_review": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("peer_responses", {}).items()])
-            }
-
-            # Get the employee profile
-            employee_profile = get_employee(employee_id)
-
-            # Generate the employee summary using the LLM (simulated API call)
-            employee_summary = generate_employee_profile_summary(
-                employee_profile,
-                combined_responses['performance_review'],
-                combined_responses['self_assessment'],
-                combined_responses['peer_review']
-            )
-
-            # Display the comprehensive summary
-            st.text_area("Employee Comprehensive Summary", employee_summary, height=400)
-
-    elif page == "👨‍💼 Performance Review":
-        performance_review_chat("12345")
-
-    elif page == "🧠 Self Assessment":
-        self_assessment_chat("12345")
-
-    elif page == "🤝 Peer Review":
-        peer_review_chat("12345")
+    page_map = {
+        "🏠 Home": "home",
+        "👨‍💼 Performance Review": "performance_review",
+        "🧠 Self Assessment": "self_assessment",
+        "🤝 Peer Review": "peer_review"
+    }
+    if st.session_state.get("current_page") != page_map[page]:
+        st.session_state.current_page = page_map[page]
+        st.rerun()
 
 
-def page1():
+def home_page():
+    st.title("Employee Evaluation")
+
+    # "Go to Job Matches" button
     if st.button("Job Recommendations"):
         st.session_state.current_page = "page_2"
         st.rerun()
-    st.title("Employee Evaluation")
 
     # Create two columns
     left_col, right_col = st.columns(2)
@@ -83,76 +48,82 @@ def page1():
     # Left side content
     with left_col:
         st.header("Employee Info")
-        st.write("Performance/Project Evaluation | **Status: Complete**")
-        st.write("Peer Reviews | **Status: Complete**")
-        st.write("Self Assessment | **Status: Complete**")
+        st.write("Performance/Project Evaluation | **Status:** " + 
+                 ("✅ Complete" if st.session_state.get("performance_done") else "❌ Incomplete"))
+        st.write("Peer Reviews | **Status:** " + 
+                 ("✅ Complete" if st.session_state.get("peer_done") else "❌ Incomplete"))
+        st.write("Self Assessment | **Status:** " + 
+                 ("✅ Complete" if st.session_state.get("self_done") else "❌ Incomplete"))
 
     # Right side content
     with right_col:
         st.header("Job Openings")
-        message = st.text_area("Write your message here. Be sure to include technical"+ 
-        " and soft skills that will likely be needed for the role:")
-        st.button("Submit")
-    
-    # Submit data for employee profile
+        message = st.text_area("Write your message here. Include skills likely needed for the role:")
+        st.button("Submit")  # You can later add a function to handle this
+
+    # Centered button for evaluation generation
     left, center, right = st.columns([1, 2, 1])
     with center:
         if st.button("Generate Evaluation"):
             st.session_state.current_page = "page_2"
             st.rerun()
 
-def page2():
-    if st.button("Employee Evaluation"):
-        st.session_state.current_page = "page_1"
-        st.rerun()
-    st.title("Jawn Dough")
+    # Final summary if all reviews are complete
+    all_complete = st.session_state.get("performance_done", False) and \
+                   st.session_state.get("self_done", False) and \
+                   st.session_state.get("peer_done", False)
 
-    # Top Section: Strengths and Needs Work
-    col1, col2, col3 = st.columns([2, 1, 2])
+    if all_complete:
+        st.success("✅ All reviews completed!")
+        st.markdown("### 📄 Full Review Summary")
 
-    with col1:
-        st.subheader("Strengths")
-        st.write("**Tech**")
-        st.markdown("- Python")
-        st.markdown("- Java")
-        st.write("**Soft**")
-        st.markdown("- Teamwork")
-        st.markdown("- Communication")
+        combined_responses = {
+            "performance_review": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("performance_responses", {}).items()]),
+            "self_assessment": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("self_assessment_responses", {}).items()]),
+            "peer_review": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("peer_responses", {}).items()])
+        }
 
-    with col2:
-        st.markdown("<div style='font-size: 4em; text-align: center;'>😊</div>", unsafe_allow_html=True)
+        employee_profile = get_employee(EMPLOYEE_ID)
 
-    with col3:
-        st.subheader("Needs work")
-        st.write("**Tech**")
-        st.markdown("- No C++")
-        st.markdown("- No SQL")
-        st.write("**Soft**")
-        st.markdown("- No Leadership")
+        employee_summary = generate_employee_profile_summary(
+            employee_profile,
+            combined_responses['performance_review'],
+            combined_responses['self_assessment'],
+            combined_responses['peer_review']
+        )
 
-    
-    st.subheader("Jawn Matches")
+        st.text_area("Employee Comprehensive Summary", employee_summary, height=400)
+    else:
+        st.info("Please complete all 3 reviews using the sidebar.")
 
-    # Bottom Section: Job Matches
-    num_jobs = 5
-    job_percentages = [100, 84, 69, 54, 12]
-    cols = st.columns(num_jobs)
 
-    for i in range(num_jobs):
-        #with cols[i]:
-            #st.markdown(f"<div style='text-align: center;'>Job #{i+1}</div>", unsafe_allow_html=True)
-            #st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{job_percentages[i]}%</div>", unsafe_allow_html=True)
-        with st.expander(f"Job #{i+1} | {job_percentages[i]}% Match"):
-            st.write("**Description:**")
-            st.markdown(f"THIs GUY FITS PERFECT")
+def self_assessment_page():
+    self_assessment_chat(EMPLOYEE_ID)
+
+
+def peer_review_page():
+    peer_review_chat(EMPLOYEE_ID)
+
+
+def performance_review_page():
+    performance_review_chat(EMPLOYEE_ID)
+
+
+def main():
+    init_employee()
+    show_sidebar()
+
+    page = st.session_state.get("current_page", "home")
+
+    if page == "home":
+        home_page()
+    elif page == "performance_review":
+        performance_review_page()
+    elif page == "self_assessment":
+        self_assessment_page()
+    elif page == "peer_review":
+        peer_review_page()
+
 
 if __name__ == '__main__':
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "page_1"
-
-    if st.session_state.current_page == "page_1":
-        page1()
-    elif st.session_state.current_page == "page_2":
-        page2()
-
-    rickey_page(EMPLOYEE_ID)
+    main()

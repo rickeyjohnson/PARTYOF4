@@ -26,6 +26,8 @@ def display_question(index, employee_data):
     return False
 
 def performance_review_chat(employee_id):
+    if st.session_state.get('current_page') != 'performance_review':
+        return
     st.title("💬 Performance Review Chat")
 
     employee_data = get_employee(employee_id)
