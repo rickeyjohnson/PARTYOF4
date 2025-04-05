@@ -1,50 +1,107 @@
 import streamlit as st
-from employee_db import create_employee, get_all_employees
-from peer_review import peer_review_chat
-from self_assessment import self_assessment_chat
-from performance_review import performance_review_chat  # Manager review
+from employee_db import create_employee, get_employee
+from pages.performance_review import performance_review_chat
+from pages.self_assessment import self_assessment_chat
+from pages.peer_review import peer_review_chat
+from fake_ai_api import generate_employee_profile_summary  # Import AI summary function
 
-# Set page config
-st.set_page_config(page_title="Employee Reviews", layout="wide")
-
-# Create a single employee for demo purposes (in a real app, you'd have a DB)
 EMPLOYEE_ID = "12345"
-create_employee(
-    employee_id=EMPLOYEE_ID,
-    name="John Doe",
-    role="Software Developer",
-    department="Engineering",
-    skills=["Python", "Machine Learning", "Data Analysis"],
-    years_experience=5
-)
+# Initialize
+if "employee_created" not in st.session_state:
+    create_employee(
+        employee_id=EMPLOYEE_ID,
+        name="John Doe",
+        role="Software Developer",
+        department="Engineering",
+        skills=["Python", "Machine Learning", "Data Analysis"],
+        years_experience=5
+    )
+    st.session_state.employee_created = True
 
-def main():
-    st.title("📝 Employee Review System")
+# App UI
+st.sidebar.title("📋 Navigation")
+page = st.sidebar.radio("Go to", ["🏠 Home", "👨‍💼 Performance Review", "🧠 Self Assessment", "🤝 Peer Review"])
 
-    # Sidebar navigation with options
-    with st.sidebar:
-        st.header("Select Review Type")
-        page = st.radio("Choose a review type:", [
-            "Peer Review",
-            "Self Assessment",
-            "Manager Performance Review"
-        ])
+st.title("💼 Internal Talent Review Portal")
 
-    # Pass EMPLOYEE_ID into the correct page
-    if page == "Peer Review":
-        st.header("Peer Review")
-        peer_review_chat(EMPLOYEE_ID)
+if page == "🏠 Home":
+    st.subheader("Welcome to your dashboard")
+    
+    # Check if all responses exist
+    all_complete = st.session_state.get("performance_done", False) and \
+                    st.session_state.get("self_done", False) and \
+                    st.session_state.get("peer_done", False)
+    
+    if not all_complete:
+        st.info("Please complete all 3 reviews using the sidebar.")
+    else:
+        st.success("✅ All reviews completed!")
+        st.markdown("### 📄 Full Review Summary")
 
-    elif page == "Self Assessment":
-        st.header("Self Assessment")
-        self_assessment_chat(EMPLOYEE_ID)
+        # Combine all responses into a single string
+        combined_responses = {
+            "performance_review": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("performance_responses", {}).items()]),
+            "self_assessment": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("self_assessment_responses", {}).items()]),
+            "peer_review": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("peer_responses", {}).items()])
+        }
 
-    elif page == "Manager Performance Review":
-        st.header("Manager Performance Review")
-        performance_review_chat(EMPLOYEE_ID)
+        # Get the employee profile
+        employee_profile = get_employee(EMPLOYEE_ID)
 
-if __name__ == "__main__":
-    main()
+        # Generate the employee summary using the LLM (simulated API call)
+        employee_summary = generate_employee_profile_summary(
+            employee_profile,
+            combined_responses['performance_review'],
+            combined_responses['self_assessment'],
+            combined_responses['peer_review']
+        )
+
+        # Display the comprehensive summary
+        st.text_area("Employee Comprehensive Summary", employee_summary, height=400)
+
+elif page == "👨‍💼 Performance Review":
+    performance_review_chat("12345")
+
+elif page == "🧠 Self Assessment":
+    self_assessment_chat("12345")
+
+elif page == "🤝 Peer Review":
+    peer_review_chat("12345")
+
+###### RICKEY AI TESTING #######
+# Fake AI Summary Generator Function
+# def generate_fake_ai_summary(employee_data):
+#     # Build a comprehensive "AI" summary of the employee using their profile and responses
+#     performance_feedback = st.session_state.performance_responses if 'performance_responses' in st.session_state else {}
+#     self_assessment_feedback = st.session_state.self_assessment_responses if 'self_assessment_responses' in st.session_state else {}
+#     peer_review_feedback = st.session_state.peer_responses if 'peer_responses' in st.session_state else {}
+    
+#     summary = f"""
+#     **Employee Profile:**
+#     - Name: {employee_data['name']}
+#     - Role: {employee_data['role']}
+#     - Department: {employee_data['department']}
+#     - Skills: {', '.join(employee_data['skills'])}
+#     - Years of Experience: {employee_data['years_experience']}
+
+#     **AI Summary of Reviews:**
+
+#     Based on the reviews and assessments provided, the following insights can be made about {employee_data['name']}:
+
+#     **Performance Review Insights:**
+#     - {', '.join([f"{q}: {a}" for q, a in performance_feedback.items()])}
+
+#     **Self-Assessment Insights:**
+#     - {', '.join([f"{q}: {a}" for q, a in self_assessment_feedback.items()])}
+
+#     **Peer Review Insights:**
+#     - {', '.join([f"{q}: {a}" for q, a in peer_review_feedback.items()])}
+
+#     **Overall Summary:**
+#     - {employee_data['name']} is a highly skilled employee with expertise in {', '.join(employee_data['skills'])}. They have a strong foundation in {employee_data['role']} and have contributed significantly to the {employee_data['department']} department. Based on feedback, {employee_data['name']} is commended for their {', '.join([feedback for feedback in performance_feedback.values() if feedback])}. Areas for improvement include {', '.join([feedback for feedback in performance_feedback.values() if 'improve' in feedback])}.
+#     """
+
+#     return summary
 
 
 ######## EVAN AND ANTHONY #############

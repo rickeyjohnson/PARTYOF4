@@ -5,11 +5,11 @@ from employee_db import get_employee
 questions = [
     {"question": "How would you rate {name}'s overall quality of work?", "type": "text"},
     {"question": "How would you rate {name}'s productivity and efficiency?", "type": "text"},
-    {"question": "How would you rate {name}'s communication skills?", "type": "text"},
-    {"question": "What are {name}'s key strengths?", "type": "text"},
-    {"question": "In what areas does {name} need improvement?", "type": "text"},
-    {"question": "What significant achievements or contributions has {name} made?", "type": "text"},
-    {"question": "What feedback do you have to help {name} grow and develop in their career?", "type": "text"}
+    # {"question": "How would you rate {name}'s communication skills?", "type": "text"},
+    # {"question": "What are {name}'s key strengths?", "type": "text"},
+    # {"question": "In what areas does {name} need improvement?", "type": "text"},
+    # {"question": "What significant achievements or contributions has {name} made?", "type": "text"},
+    # {"question": "What feedback do you have to help {name} grow and develop in their career?", "type": "text"}
 ]
 
 def display_question(index, employee_data):
@@ -29,6 +29,15 @@ def performance_review_chat(employee_id):
     st.title("💬 Performance Review Chat")
 
     employee_data = get_employee(employee_id)
+
+    if "performance_responses" not in st.session_state:
+        st.session_state.performance_responses = {}
+    if "performance_question_index" not in st.session_state:
+        st.session_state.performance_question_index = 0
+
+    if "performance_done" not in st.session_state:
+        st.session_state.performance_done = False
+
     if not employee_data:
         st.error("Employee not found!")
         return
@@ -63,12 +72,9 @@ def performance_review_chat(employee_id):
             st.rerun()
     else:
         st.success("✅ Thank you for your response!")
-        st.markdown("### 📄 Review Summary:")
+        
+        # Save responses into session state for display in app.py
+        st.session_state.performance_responses = st.session_state.responses
 
-        full_review = "\n\n".join([f"**Q**: {q}\n**A**: {a}" for q, a in st.session_state.responses.items()])
-        st.text_area("Full Responses", full_review, height=300)
-
-        if st.button("Restart Review"):
-            st.session_state.responses = {}
-            st.session_state.question_index = 0
-            st.rerun()
+        # Signal completion
+        st.session_state.performance_done = True

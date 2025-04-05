@@ -6,11 +6,11 @@ from employee_db import get_employee
 peer_review_questions = [
     {"question": "How would you rate {name}'s collaboration with peers?", "type": "text"},
     {"question": "How well does {name} communicate with teammates?", "type": "text"},
-    {"question": "How would you rate {name}'s contribution to team goals?", "type": "text"},
-    {"question": "What are {name}'s key strengths in a team setting?", "type": "text"},
-    {"question": "In what areas could {name} improve when working with the team?", "type": "text"},
-    {"question": "How does {name} handle feedback from teammates?", "type": "text"},
-    {"question": "What are some examples of {name}'s contributions to the team's success?", "type": "text"}
+    # {"question": "How would you rate {name}'s contribution to team goals?", "type": "text"},
+    # {"question": "What are {name}'s key strengths in a team setting?", "type": "text"},
+    # {"question": "In what areas could {name} improve when working with the team?", "type": "text"},
+    # {"question": "How does {name} handle feedback from teammates?", "type": "text"},
+    # {"question": "What are some examples of {name}'s contributions to the team's success?", "type": "text"}
 ]
 
 if 'peer_responses' not in st.session_state:
@@ -33,6 +33,14 @@ def peer_review_chat(employee_id):
     st.title("💬 Peer Review Chat")
 
     employee_data = get_employee(employee_id)
+
+    if "peer_responses" not in st.session_state:
+        st.session_state.peer_responses = {}
+    if "peer_question_index" not in st.session_state:
+        st.session_state.peer_question_index = 0
+    
+    if "peer_done" not in st.session_state:
+        st.session_state.peer_done = False
 
     if not employee_data:
         st.error("Employee not found!")
@@ -66,16 +74,9 @@ def peer_review_chat(employee_id):
         if display_peer_question(st.session_state.peer_question_index, employee_data):
             st.rerun()
     else:
-        st.success("Thank you for your response!")
-        st.markdown("### 📄 Peer Review Summary:")
+        st.success("✅ Thank you for your response!")
+        # Save responses into session state for display in app.py
+        st.session_state.peer_responses = st.session_state.peer_responses
 
-        summary = ""
-        for q, a in st.session_state.peer_responses.items():
-            summary += f"**Q**: {q}\n**A**: {a}\n\n"
-
-        st.text_area("Full Responses (for HR or report generation)", summary, height=300)
-
-        if st.button("Restart Peer Review"):
-            st.session_state.peer_responses = {}
-            st.session_state.peer_question_index = 0
-            st.rerun()
+        # Signal completion
+        st.session_state.peer_done = True
