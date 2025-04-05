@@ -299,7 +299,7 @@ def page2(employee_id):
         }
 
         employee_profile = get_employee(EMPLOYEE_ID)
-
+        
         employee_summary = generate_employee_profile_summary(
             employee_profile,
             combined_responses['performance_review'],
@@ -310,6 +310,7 @@ def page2(employee_id):
         st.text_area("Employee Comprehensive Summary", employee_summary, height=400)
         st.session_state.AI_DONE = True
 
+        st.subheader("Job Matches")
         with st.container():
             if st.session_state.get("AI_DONE"):
                 jobs = get_all_jobs()
