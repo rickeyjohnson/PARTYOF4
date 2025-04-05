@@ -1,8 +1,8 @@
 import streamlit as st
 from employee_db import create_employee, get_employee
-from pages.performance_review import performance_review_chat
-from pages.self_assessment import self_assessment_chat
-from pages.peer_review import peer_review_chat
+from reviews.performance_review import performance_review_chat
+from reviews.self_assessment import self_assessment_chat
+from reviews.peer_review import peer_review_chat
 from fake_ai_api import generate_employee_profile_summary  # Import AI summary function
 
 EMPLOYEE_ID = "12345"
