@@ -40,13 +40,13 @@ def page1():
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
-                    font-size: 2.5em; /* Adjust font size as needed */
-                    color: red; /* Set title color to red */
+                    font-size: 8em; /* Adjust font size as needed */
+                    color: green; /* Set title color to red */
                 }
             </style>
             <div class="banner">
                 <img src="https://techstartups.com/wp-content/uploads/2021/02/Chevron-Low-Carbon.jpg" alt="Banner Image">
-                <h1>TITLE</h1>
+                <h1>Employee Evaluation</h1>
             </div>
             """, unsafe_allow_html=True
         )
@@ -64,9 +64,12 @@ def page1():
             st.markdown("---")
 
             # Placeholder for profile + basic info
-            st.image("https://via.placeholder.com/80", width=80)
-            st.write("Name: Jawn Dough")
-            st.write("Role: Software Engineer")
+            col1, col2 = st.columns([1,5])
+            with col1:
+                st.image("https://media.licdn.com/dms/image/v2/D5603AQE-FiTkkRy2fQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725332239415?e=1749081600&v=beta&t=nbsCKd_pdInCJiq09z_d2iKq0aC1qgMPOhXxXv_KZRk", width=100)
+            with col2:
+                st.write("**Name**: Jawn Dough")
+                st.write("**Role**: Software Engineer")
 
             st.markdown("---")
 
@@ -75,11 +78,16 @@ def page1():
                 status = "Requested"
                 if st.session_state.get(key, False):
                     status = "Completed"
-                return f"**{label}** | Status: `{status}`"
+                return f"""
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>{label}</strong>
+                        <code>Status: {status}</code>
+                    </div>
+                """
 
-            st.write(review_status("Performance/Project Review", "performance_done"))
-            st.write(review_status("Peer Review", "peer_done"))
-            st.write(review_status("Self Review", "self_done"))
+            st.markdown(review_status("Performance/Project Review", "performance_done"), unsafe_allow_html=True)
+            st.markdown(review_status("Peer Review", "peer_done"), unsafe_allow_html=True)
+            st.markdown(review_status("Self Review", "self_done"), unsafe_allow_html=True)
 
             st.markdown("---")
 
