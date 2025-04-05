@@ -6,8 +6,6 @@ from reviews.peer_review import peer_review_chat
 from fake_ai_api import generate_employee_profile_summary, get_job_match_score  # Import AI summary function
 from data.job_listing import get_all_jobs
 
-st.set_page_config(layout="wide")
-
 EMPLOYEE_ID = "12345"
 
 def init_employee():
@@ -25,16 +23,17 @@ def init_employee():
 
 
 def show_sidebar():
-    page = st.sidebar.radio("Go to", ["🏠 Home", "👨‍💼 Performance Review", "🧠 Self Assessment", "🤝 Peer Review"])
+    page = st.sidebar.radio(
+        "Go to",
+        ["🏠 Home", "👨‍💼 Performance Review", "🧠 Self Assessment", "🤝 Peer Review", "🧑 View Profile"]
+    )
     page_map = {
         "🏠 Home": "home",
         "👨‍💼 Performance Review": "performance_review",
         "🧠 Self Assessment": "self_assessment",
-        "🤝 Peer Review": "peer_review"
+        "🤝 Peer Review": "peer_review",
+        "🧑 View Profile": "page_2"
     }
-    if st.session_state.get("current_page") != page_map[page]:
-        st.session_state.current_page = page_map[page]
-        st.rerun()
 
 def self_assessment_page():
     self_assessment_chat(EMPLOYEE_ID)
@@ -179,6 +178,7 @@ def page1(employee_id):
                 review_status(employee, review_name, review_type)
 
             if st.button("View User Profile"):
+                st.session_state.PAGE1_CLICKED = True
                 st.session_state.current_page = "page_2"  # Set the page change
                 st.rerun()  # Trigger rerun to update the page immediately
 
@@ -249,38 +249,117 @@ def page2(employee_id):
     
     
     with st.container(border=True):
-        st.write(f"Description here:")
+        def review_status(employee, review_name, review_type):
+                status_key = f"{review_type}_done"
+                
+                # Set default status to "Requested" (Red)
+                status = "Requested"
+                color = "red"
+                
+                # If session state for the review is set to True, update to Completed (Green)
+                if st.session_state.get(status_key, False):
+                    status = "Completed"
+                    color = "green"
+                # If the button was clicked but not yet marked as done, update to Pending (Yellow)
+                elif st.session_state.get(f"{review_type}_requested", False):
+                    status = "Pending"
+                    color = "yellow"
+                
+                # Layout: One row with three columns
+                col1, col2, col3 = st.columns([2, 4, 2])  # Adjusting column sizes for better layout
+                
+                # Left column: Review Type (Performance, Peer, Self)
+                with col1:
+                    st.markdown(f"## **{review_name}**")
+                
+                # Middle column: Status
+                with col2:
+                    if color == "red":
+                        st.error(f"Status: `{status}`")
+                    elif color == "yellow":
+                        st.warning(f"Status: `{status}`")
+                    elif color == "green":
+                        st.success(f"Status: `{status}`")
+                
+                # Right column: Request Button
+                with col3:
+                    if not st.session_state.get(f"{review_type}_requested", False):
+                        if st.button(f"Request {review_name}", key=f"{employee_id}_{review_type}_button"):
+                            st.session_state[f"{review_type}_requested"] = True
+                            st.session_state[status_key] = False
+                            st.rerun()  # Rerun to update the status immediately
 
-def main():
-    init_employee()
-    # show_sidebar()
+        review_types = [
+                ("Performance Review", "performance"),
+                ("Peer Review", "peer"),
+                ("Self Assessment", "self")
+            ]
+        
+        for review_name, review_type in review_types:
+            review_status(employee, review_name, review_type)
 
-    page = st.session_state.get("current_page", "home")
-    st.write(page)
+        # Final summary if all reviews are complete
+    all_complete = st.session_state.get("performance_done", False) and \
+                st.session_state.get("self_done", False) and \
+                st.session_state.get("peer_done", False)
 
-    if page == "home":
-        page1(EMPLOYEE_ID)
-    elif page == "performance_review":
-        performance_review_page()
-    elif page == "self_assessment":
-        self_assessment_page()
-    elif page == "peer_review":
-        peer_review_page()
-    elif st.session_state.current_page == "page_2":
-        page2(EMPLOYEE_ID)
+    if all_complete:
+        st.success("✅ All reviews completed!")
+        st.markdown("### 📄 Full Review Summary")
+
+        combined_responses = {
+            "performance_review": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("performance_responses", {}).items()]),
+            "self_assessment": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("self_assessment_responses", {}).items()]),
+            "peer_review": "\n".join([f"{q}: {a}" for q, a in st.session_state.get("peer_responses", {}).items()])
+        }
+
+        employee_profile = get_employee(EMPLOYEE_ID)
+
+        employee_summary = generate_employee_profile_summary(
+            employee_profile,
+            combined_responses['performance_review'],
+            combined_responses['self_assessment'],
+            combined_responses['peer_review']
+        )
+
+        st.text_area("Employee Comprehensive Summary", employee_summary, height=400)
+    else:
+        st.info("Please complete all 3 reviews using the sidebar.")
+
+
 
     
+def main():
+    st.set_page_config(layout="wide")
+    init_employee()
+
+    if "current_page" not in st.session_state:
+        st.session_state.current_page = "🏠 Home"
+
+    # App UI
+    st.sidebar.title("📋 Navigation")
+    page = st.sidebar.radio("Go to", ["🏠 Home", "👨‍💼 Performance Review", "🧠 Self Assessment", "🤝 Peer Review"])
+    if st.session_state.get("PAGE1_CLICKED"):
+        page = "page_2"
+        st.session_state.PAGE1_CLICKED = False
+
+    # Show sidebar and handle navigation
+    # show_sidebar()
+
+    # Route to the correct page
+    if page == "🏠 Home":
+        page1(EMPLOYEE_ID)
+    elif page == "👨‍💼 Performance Review":
+        performance_review_page()
+    elif page == "🧠 Self Assessment":
+        self_assessment_page()
+    elif page == "🤝 Peer Review":
+        peer_review_page()
+    elif page == "page_2":
+        page2(EMPLOYEE_ID)
 
 
 if __name__ == '__main__':
-    init_employee()
-    # show_sidebar()
+    main()
 
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "page_1"
-
-    if st.session_state.current_page == "page_1":
-        page1(EMPLOYEE_ID)
-    elif st.session_state.current_page == "page_2":
-        page2(EMPLOYEE_ID)
 
