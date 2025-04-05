@@ -1,5 +1,6 @@
 import streamlit as st
 from data.employee_db import get_employee
+from page2 import page2
 
 def page1(employee_id):
     # Top bar with title
@@ -57,7 +58,7 @@ def page1(employee_id):
             
             # Left column: Profile picture
             with profile_col1:
-                pfp_url = employee.get("pfp")
+                pfp_url = employee.get("pfp_url")
                 st.image(pfp_url, width=100)
             
             # Right column: Name and other details
@@ -66,7 +67,6 @@ def page1(employee_id):
 
             st.markdown("---")
 
-            st.markdown(f"**Role**: {employee['role']}")
             st.markdown(f"**Current Role**: {employee['role']}")  # Added Current Role
             st.markdown(f"**Department**: {employee['department']}")
             st.markdown(f"**Skills**: {', '.join(employee['skills'])}")
@@ -140,8 +140,9 @@ def page1(employee_id):
                 review_status(employee, review_name, review_type)
 
             if st.button("View User Profile"):
-                st.write('gonna kms')
-                #page2()
+                st.write('BEST')
+                st.session_state.current_page = "page_2"
+                st.write(st.session_state.current_page)
 
 
     # Right column: Jobs and Submission

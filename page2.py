@@ -6,30 +6,12 @@ from reviews.peer_review import peer_review_chat
 from fake_ai_api import generate_employee_profile_summary, get_job_match_score
 from data.job_listing import get_all_jobs
 
-def page2():
+def page2(employee_id):
     # Main layout with two columns
     main_col1, main_col2 = st.columns([1,1])
 
-    # Left column: Employee Info Card
-    EMPLOYEE_ID = "12345"
+    employee = get_employee(employee_id)
 
-    if "employee_created" not in st.session_state:
-        create_employee(
-            employee_id=EMPLOYEE_ID,
-            name="John Doe",
-            role="Software Developer",
-            department="Engineering",
-            skills=["Python", "Machine Learning", "Data Analysis"],
-            years_experience=5,
-            pfp_url="https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"
-        )
-        st.session_state.employee_created = True
-            
-        employee = get_employee(EMPLOYEE_ID)
-
-        if not employee:
-            st.error("Employee not found.")
-            return
     # Left column: Employee Info Card
     with main_col1:
         # Display employee info in a container
@@ -39,7 +21,7 @@ def page2():
             
             # Left column: Profile picture
             with profile_col1:
-                pfp_url = employee.get("pfp")
+                pfp_url = employee.get("pfp_url")
                 st.image(pfp_url)
             
             # Right column: Name and other details
@@ -86,6 +68,3 @@ def page2():
         st.rerun()
     with st.container(border=True):
         st.write(f"Description here:")
-
-if __name__ == '__main__':
-    page2()

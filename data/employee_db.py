@@ -6,7 +6,7 @@ def create_employee(employee_id, name, role, department, skills, years_experienc
         "employee_id": employee_id,
         "name": name,
         "role": role,
-        "pfp": pfp_url,
+        "pfp_url": pfp_url,
         "department": department,
         "skills": skills,
         "years_experience": years_experience,
