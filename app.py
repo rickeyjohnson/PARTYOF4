@@ -1,13 +1,17 @@
 import streamlit as st
 
 def page1():
-    st.title("Page 1 Content")
-    st.write("This is the content of the first page.")
     if st.button("Go to Page 2"):
         st.session_state.current_page = "page_2"
         st.rerun()
+    st.title("Page 1 Content")
+    st.write("This is the content of the first page.")
+    
 
 def page2():
+    if st.button("Go back to Page 1"):
+        st.session_state.current_page = "page_1"
+        st.rerun()
     st.title("Jawn Dough")
 
     # Top Section: Strengths and Needs Work
@@ -33,7 +37,7 @@ def page2():
         st.write("**Soft**")
         st.markdown("- No Leadership")
 
-    st.markdown("<hr>")
+    
     st.subheader("Jawn Matches")
 
     # Bottom Section: Job Matches
@@ -45,11 +49,9 @@ def page2():
         with cols[i]:
             st.markdown(f"<div style='text-align: center;'>Job #{i+1}</div>", unsafe_allow_html=True)
             st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{job_percentages[i]}%</div>", unsafe_allow_html=True)
-            st.markdown("<hr>")
+            
 
-    if st.button("Go back to Page 1"):
-        st.session_state.current_page = "page_1"
-        st.rerun()
+    
 
 if "current_page" not in st.session_state:
     st.session_state.current_page = "page_1"
