@@ -1,7 +1,7 @@
 import streamlit as st
 
 def page1():
-    if st.button("Go to Page 2"):
+    if st.button("Page 2"):
         st.session_state.current_page = "page_2"
         st.rerun()
     st.title("Page 1 Content")
@@ -9,7 +9,7 @@ def page1():
     
 
 def page2():
-    if st.button("Go back to Page 1"):
+    if st.button("Page 1"):
         st.session_state.current_page = "page_1"
         st.rerun()
     st.title("Jawn Dough")
