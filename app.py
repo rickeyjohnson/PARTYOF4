@@ -72,7 +72,7 @@ def rickey_page(employee_id):
 
 
 def page1():
-    if st.button("Go to Page 2"):
+    if st.button("Job Recommendations"):
         st.session_state.current_page = "page_2"
         st.rerun()
     st.title("Page 1 Content")
@@ -99,7 +99,7 @@ def page1():
     
 
 def page2():
-    if st.button("Page 1"):
+    if st.button("Employee Evaluation"):
         st.session_state.current_page = "page_1"
         st.rerun()
     st.title("Jawn Dough")
