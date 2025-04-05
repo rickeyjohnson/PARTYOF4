@@ -1,91 +1,111 @@
 import streamlit as st
+from employee_db import create_employee, get_all_employees
 from peer_review import peer_review_chat
 from self_assessment import self_assessment_chat
-from performance_review import performance_review_chat  # Import manager review
+from performance_review import performance_review_chat  # Manager review
 
-# Set up the Streamlit app layout
+# Set page config
+st.set_page_config(page_title="Employee Reviews", layout="wide")
+
+# Create a single employee for demo purposes (in a real app, you'd have a DB)
+EMPLOYEE_ID = "12345"
+create_employee(
+    employee_id=EMPLOYEE_ID,
+    name="John Doe",
+    role="Software Developer",
+    department="Engineering",
+    skills=["Python", "Machine Learning", "Data Analysis"],
+    years_experience=5
+)
+
 def main():
-    st.set_page_config(page_title="Employee Reviews", layout="wide")
+    st.title("📝 Employee Review System")
 
-    # Add a title to the app
-    st.title("Employee Review System")
-
-    # Sidebar navigation with options for Peer Review, Self Assessment, and Manager Review
+    # Sidebar navigation with options
     with st.sidebar:
         st.header("Select Review Type")
-        page = st.radio("Choose a review type:", ["Peer Review", "Self Assessment", "Manager Performance Review"])
+        page = st.radio("Choose a review type:", [
+            "Peer Review",
+            "Self Assessment",
+            "Manager Performance Review"
+        ])
 
-    # Display the corresponding page based on the selection
+    # Pass EMPLOYEE_ID into the correct page
     if page == "Peer Review":
         st.header("Peer Review")
-        peer_review_chat()
+        peer_review_chat(EMPLOYEE_ID)
+
     elif page == "Self Assessment":
         st.header("Self Assessment")
-        self_assessment_chat()
+        self_assessment_chat(EMPLOYEE_ID)
+
     elif page == "Manager Performance Review":
         st.header("Manager Performance Review")
-        performance_review_chat()
+        performance_review_chat(EMPLOYEE_ID)
 
-def page1():
-    if st.button("Page 2"):
-        st.session_state.current_page = "page_2"
-        st.rerun()
-    st.title("Page 1 Content")
-    st.write("This is the content of the first page.")
+if __name__ == "__main__":
+    main()
+
+
+######## EVAN AND ANTHONY #############
+
+# def page1():
+#     if st.button("Page 2"):
+#         st.session_state.current_page = "page_2"
+#         st.rerun()
+#     st.title("Page 1 Content")
+#     st.write("This is the content of the first page.")
     
 
-def page2():
-    if st.button("Page 1"):
-        st.session_state.current_page = "page_1"
-        st.rerun()
-    st.title("Jawn Dough")
+# def page2():
+#     if st.button("Page 1"):
+#         st.session_state.current_page = "page_1"
+#         st.rerun()
+#     st.title("Jawn Dough")
 
-    # Top Section: Strengths and Needs Work
-    col1, col2, col3 = st.columns([2, 1, 2])
+#     # Top Section: Strengths and Needs Work
+#     col1, col2, col3 = st.columns([2, 1, 2])
 
-    with col1:
-        st.subheader("Strengths")
-        st.write("**Tech**")
-        st.markdown("- Python")
-        st.markdown("- Java")
-        st.write("**Soft**")
-        st.markdown("- Teamwork")
-        st.markdown("- Communication")
+#     with col1:
+#         st.subheader("Strengths")
+#         st.write("**Tech**")
+#         st.markdown("- Python")
+#         st.markdown("- Java")
+#         st.write("**Soft**")
+#         st.markdown("- Teamwork")
+#         st.markdown("- Communication")
 
-    with col2:
-        st.markdown("<div style='font-size: 4em; text-align: center;'>😊</div>", unsafe_allow_html=True)
+#     with col2:
+#         st.markdown("<div style='font-size: 4em; text-align: center;'>😊</div>", unsafe_allow_html=True)
 
-    with col3:
-        st.subheader("Needs work")
-        st.write("**Tech**")
-        st.markdown("- No C++")
-        st.markdown("- No SQL")
-        st.write("**Soft**")
-        st.markdown("- No Leadership")
+#     with col3:
+#         st.subheader("Needs work")
+#         st.write("**Tech**")
+#         st.markdown("- No C++")
+#         st.markdown("- No SQL")
+#         st.write("**Soft**")
+#         st.markdown("- No Leadership")
 
     
-    st.subheader("Jawn Matches")
+#     st.subheader("Jawn Matches")
 
-    # Bottom Section: Job Matches
-    num_jobs = 5
-    job_percentages = [100, 84, 69, 54, 12]
-    cols = st.columns(num_jobs)
+#     # Bottom Section: Job Matches
+#     num_jobs = 5
+#     job_percentages = [100, 84, 69, 54, 12]
+#     cols = st.columns(num_jobs)
 
-    for i in range(num_jobs):
-        with cols[i]:
-            st.markdown(f"<div style='text-align: center;'>Job #{i+1}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{job_percentages[i]}%</div>", unsafe_allow_html=True)
+#     for i in range(num_jobs):
+#         with cols[i]:
+#             st.markdown(f"<div style='text-align: center;'>Job #{i+1}</div>", unsafe_allow_html=True)
+#             st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{job_percentages[i]}%</div>", unsafe_allow_html=True)
             
 
     
 
-if "current_page" not in st.session_state:
-    st.session_state.current_page = "page_1"
+# if "current_page" not in st.session_state:
+#     st.session_state.current_page = "page_1"
 
-if st.session_state.current_page == "page_1":
-    page1()
-elif st.session_state.current_page == "page_2":
-    page2()
-
-if __name__ == '__main__':
-    main()
+# if st.session_state.current_page == "page_1":
+#     page1()
+# elif st.session_state.current_page == "page_2":
+#     page2()
