@@ -200,12 +200,11 @@ def page1(employee_id):
 
 def page2(employee_id):
     # Main layout with two columns
-    main_col1, main_col2 = st.columns([1,1])
 
     employee = get_employee(employee_id)
 
     # Left column: Employee Info Card
-    with main_col1:
+    with st.container():
         # Display employee info in a container
         with st.container(border=True):
             # Layout: Display profile picture and name side by side
@@ -233,20 +232,6 @@ def page2(employee_id):
                 st.write("**Needs Improvement**")
                 st.write("*Technical Skills*")
                 st.write("*Soft Skills*")
-            
-    # Right column: Jobs and Submission
-    with main_col2:
-        with st.container():
-            # Bottom Section: Job Matches
-            num_jobs = 5
-            job_percentages = [100, 84, 69, 54, 12]
-            cols = st.columns(num_jobs)
-
-            for i in range(num_jobs):
-                with st.expander(f"Job #{i+1} | {job_percentages[i]}% Match"):
-                    st.write("**Description:**")
-                    st.markdown(f"THIs GUY FITS PERFECT")
-    
     
     with st.container(border=True):
         def review_status(employee, review_name, review_type):
@@ -323,6 +308,37 @@ def page2(employee_id):
         )
 
         st.text_area("Employee Comprehensive Summary", employee_summary, height=400)
+        st.session_state.AI_DONE = True
+
+        with st.container():
+            if st.session_state.get("AI_DONE"):
+                jobs = get_all_jobs()
+                i = 0
+
+                for job in jobs:
+                    i += 1
+                    ai_score = get_job_match_score(employee_summary, job)
+
+                    with st.expander(f"{ai_score['job_title']}: | {ai_score['score']}% Match"):
+                        st.markdown(f"### {ai_score['score']} %")
+
+                        st.write("**Description**")
+                        st.markdown(f"{ai_score['job_description']}")
+
+                        st.write("**Reason**")
+                        st.markdown(f"{ai_score['reason']}")
+            else:
+                # Bottom Section: Job Matches
+                num_jobs = 5
+                job_percentages = [100, 84, 69, 54, 12]
+                cols = st.columns(num_jobs)
+
+                for i in range(num_jobs):
+                    with st.expander(f"Job #{i+1} | {job_percentages[i]}% Match"):
+                        st.write("**Description:**")
+                        st.markdown(f"THIs GUY FITS PERFECT")
+
+
     else:
         st.info("Please complete all 3 reviews using the sidebar.")
 
