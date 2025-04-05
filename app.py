@@ -80,12 +80,9 @@ def rickey_page(employee_id):
 
 
 def page1():
-    if st.button("Go to Page 2"):
+    if st.button("Job Recommendations"):
         st.session_state.current_page = "page_2"
         st.rerun()
-    st.title("Page 1 Content")
-    st.write("This is the content of the first page.")
-
     st.title("Employee Evaluation")
 
     # Create two columns
@@ -94,9 +91,20 @@ def page1():
     # Left side content
     with left_col:
         st.header("Employee Info")
-        st.write("Performance/Project Evaluation | **Status: Complete**")
-        st.write("Peer Reviews | **Status: Complete**")
-        st.write("Self Assessment | **Status: Complete**")
+        performance_status = "Requested"
+        if st.session_state.get("performance_done", False):
+            performance_status = "Completed"
+        st.write(f"Performance/Project Review | **Status: {performance_status}**")
+
+        peer_status = "Requested"
+        if st.session_state.get("peer_done", False):
+            performance_status = "Completed"
+        st.write(f"Peer Reviews | **Status: {peer_status}**")
+
+        self_status = "Requested"
+        if st.session_state.get("self_done", False):
+            performance_status = "Completed"
+        st.write(f"Peer Reviews | **Status: {self_status}**")
 
     # Right side content
     with right_col:
@@ -105,9 +113,15 @@ def page1():
         " and soft skills that will likely be needed for the role:")
         st.button("Submit")
     
+    # Submit data for employee profile
+    left, center, right = st.columns([1, 2, 1])
+    with center:
+        if st.button("Generate Evaluation"):
+            st.session_state.current_page = "page_2"
+            st.rerun()
 
 def page2():
-    if st.button("Page 1"):
+    if st.button("Employee Evaluation"):
         st.session_state.current_page = "page_1"
         st.rerun()
     st.title("Jawn Dough")
@@ -144,9 +158,12 @@ def page2():
     cols = st.columns(num_jobs)
 
     for i in range(num_jobs):
-        with cols[i]:
-            st.markdown(f"<div style='text-align: center;'>Job #{i+1}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{job_percentages[i]}%</div>", unsafe_allow_html=True)
+        #with cols[i]:
+            #st.markdown(f"<div style='text-align: center;'>Job #{i+1}</div>", unsafe_allow_html=True)
+            #st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{job_percentages[i]}%</div>", unsafe_allow_html=True)
+        with st.expander(f"Job #{i+1} | {job_percentages[i]}% Match"):
+            st.write("**Description:**")
+            st.markdown(f"THIs GUY FITS PERFECT")
 
 if __name__ == '__main__':
     if "current_page" not in st.session_state:

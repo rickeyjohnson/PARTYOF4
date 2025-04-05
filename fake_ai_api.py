@@ -1,4 +1,23 @@
 import re
+from google import genai
+from google.genai import types
+from API_KEY import API_KEY
+
+def call_llm(prompt):
+    client = genai.Client(api_key=API_KEY)
+    response = client.models.generate_content(
+    model="gemini-2.0-flash",
+    config=types.GenerateContentConfig(
+        system_instruction="You are an internal AI within Chevron. You are tasked with creating an employee profile for the given employee, and create a profile for them to find the job that best suits them. Please answer with professional language."),
+        contents=prompt
+    )
+    return response.text
+
+def fake_call_llm(prompt: str) -> str:
+    return """
+    Match Percentage: 87%
+    Reason: Based on the candidate’s experience with Python and Machine Learning, they are highly suited for the role of Senior Machine Learning Engineer. Their strengths align well with the required job skills.
+    """
 
 def generate_prompt(employee_profile, performance_review_responses, self_assessment_responses, peer_review_responses):
     prompt = f"""
@@ -34,35 +53,8 @@ def generate_prompt(employee_profile, performance_review_responses, self_assessm
 def generate_employee_profile_summary(employee_profile, performance_review_responses, self_assessment_responses, peer_review_responses):
     # Generate the prompt for the LLM
     prompt = generate_prompt(employee_profile, performance_review_responses, self_assessment_responses, peer_review_responses)
-
-    # Simulating an API call to the LLM (this would be replaced by a real API call in production)
-    # For now, we'll return a simulated response based on the prompt.
-    # call_llm will be used
-    
-    summary = f"""
-    **Summary of {employee_profile['name']}'s Performance:**
-
-    **Strengths**:
-    {employee_profile['name']} has consistently demonstrated exceptional technical skills in their role as a {employee_profile['role']}. They have excelled in using {', '.join(employee_profile['skills'])} to solve complex problems and drive results. In the performance review, {employee_profile['name']} was praised for their ability to manage projects effectively and work efficiently under pressure. One notable example was their success in delivering a critical system upgrade ahead of schedule, showcasing both technical expertise and strong time management skills.
-
-    **Areas for Development**:
-    Despite their strong performance, {employee_profile['name']} could improve their communication skills, especially when explaining complex technical concepts to non-technical stakeholders. Their self-assessment highlighted a desire to improve in this area, and their peer feedback echoed the sentiment. Developing these skills would help them collaborate more effectively with cross-functional teams and elevate their leadership potential.
-
-    **Skills Impact**:
-    The skills demonstrated by {employee_profile['name']} in Python, Machine Learning, and Data Analysis have significantly contributed to the team's success. Their ability to integrate data-driven insights into software development processes has led to improved product performance and efficiency. These skills are crucial to the company's continued success and position {employee_profile['name']} as a key contributor to the team.
-
-    **Overall Summary**:
-    {employee_profile['name']} is a highly valuable member of the team, with a proven track record of delivering high-quality work. While there are opportunities for growth in communication, their technical proficiency and problem-solving abilities are exceptional. With continued development in these areas, {employee_profile['name']} is well-positioned for future leadership roles.
-    """
-
+    summary = call_llm(prompt=prompt)
     return summary
-
-def call_llm(prompt: str) -> str:
-    """Fake Gemini API call (replace with actual API later)"""
-    return """
-    Match Percentage: 87%
-    Reason: Based on the candidate’s experience with Python and Machine Learning, they are highly suited for the role of Senior Machine Learning Engineer. Their strengths align well with the required job skills.
-    """
 
 def generate_job_match_prompt(employee_profile: str, job: dict) -> str:
     return f"""
@@ -87,7 +79,7 @@ def generate_job_match_prompt(employee_profile: str, job: dict) -> str:
 
 def get_job_match_score(employee_profile: str, job: dict) -> dict:
     prompt = generate_job_match_prompt(employee_profile, job)
-    llm_response = call_llm(prompt)
+    llm_response = fake_call_llm(prompt)
 
     # Extract match percentage
     percentage_match = re.search(r"Match Percentage: (\d+)%", llm_response)
