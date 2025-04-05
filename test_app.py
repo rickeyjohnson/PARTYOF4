@@ -8,11 +8,25 @@ from data.job_listing import get_all_jobs
 
 st.set_page_config(
     page_title="Employee Evaluation",
-    layout="wide",  # Use "wide" layout for full width
+    # layout="wide",  # Use "wide" layout for full width
     initial_sidebar_state="collapsed"  # Optional: start sidebar collapsed
 )
 
-def page1():
+EMPLOYEE_ID = "12345"
+
+if "employee_created" not in st.session_state:
+        create_employee(
+            employee_id=EMPLOYEE_ID,
+            name="John Doe",
+            role="Software Developer",
+            department="Engineering",
+            skills=["Python", "Machine Learning", "Data Analysis"],
+            years_experience=5,
+            pfp_url="https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg"
+        )
+        st.session_state.employee_created = True
+
+def page1(employee_id):
     if st.button("Job Recommendations"):
         st.session_state.current_page = "page_2"
         st.rerun()
@@ -52,24 +66,39 @@ def page1():
         )
 
 
-
     # Main layout with two columns
     main_col1, main_col2 = st.columns([2, 1])
 
     # Left column: Employee Info Card
     with main_col1:
-        with st.container():
-            st.markdown("### 👤 Employee Info")
+        employee = get_employee(employee_id)
 
-            st.markdown("---")
-
-            # Placeholder for profile + basic info
-            col1, col2 = st.columns([1,5])
-            with col1:
-                st.image("https://media.licdn.com/dms/image/v2/D5603AQE-FiTkkRy2fQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1725332239415?e=1749081600&v=beta&t=nbsCKd_pdInCJiq09z_d2iKq0aC1qgMPOhXxXv_KZRk", width=100)
-            with col2:
-                st.write("**Name**: Jawn Dough")
-                st.write("**Role**: Software Engineer")
+        if not employee:
+            st.error("Employee not found.")
+            return
+        
+        # Display employee info in a container
+        with st.container(border=True):
+            # Layout: Display profile picture and name side by side
+            profile_col1, profile_col2 = st.columns([1, 3])
+            
+            # Left column: Profile picture
+            with profile_col1:
+                pfp_url = employee.get("pfp")
+                st.image(pfp_url)
+            
+            # Right column: Name and other details
+            with profile_col2:
+                st.title(f"{employee['name']}")
+                st.markdown(f"**Role**: {employee['role']}")
+            
+            # st.markdown("---")
+            
+            # Employee feedback summary
+            # st.markdown("### Feedback Summary")
+            # feedback_summary = get_profile_summary(employee_id)
+            # st.text_area("Feedback Summary", feedback_summary, height=200, disabled=True)
+        
 
             st.markdown("---")
 
@@ -121,10 +150,4 @@ def page1():
 
 
 if __name__ == '__main__':
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "page_1"
-
-    if st.session_state.current_page == "page_1":
-        page1()
-    elif st.session_state.current_page == "page_2":
-        page2()
+    page1(EMPLOYEE_ID)
