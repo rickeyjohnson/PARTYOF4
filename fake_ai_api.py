@@ -1,3 +1,5 @@
+import re
+
 def generate_prompt(employee_profile, performance_review_responses, self_assessment_responses, peer_review_responses):
     prompt = f"""
     Based on the following responses to performance, self-assessment, and peer reviews, as well as the employee profile, please generate a comprehensive and detailed summary of the employee's overall performance, contributions, and areas for improvement. The employee's profile and feedback should be analyzed holistically to provide a thorough assessment.
@@ -35,6 +37,7 @@ def generate_employee_profile_summary(employee_profile, performance_review_respo
 
     # Simulating an API call to the LLM (this would be replaced by a real API call in production)
     # For now, we'll return a simulated response based on the prompt.
+    # call_llm will be used
     
     summary = f"""
     **Summary of {employee_profile['name']}'s Performance:**
@@ -53,3 +56,50 @@ def generate_employee_profile_summary(employee_profile, performance_review_respo
     """
 
     return summary
+
+def call_llm(prompt: str) -> str:
+    """Fake Gemini API call (replace with actual API later)"""
+    return """
+    Match Percentage: 87%
+    Reason: Based on the candidate’s experience with Python and Machine Learning, they are highly suited for the role of Senior Machine Learning Engineer. Their strengths align well with the required job skills.
+    """
+
+def generate_job_match_prompt(employee_profile: str, job: dict) -> str:
+    return f"""
+        You are an expert career advisor and HR AI assistant.
+
+        Given the following employee profile and job description, assess how well the employee fits the role.
+        Return a single number representing the match percentage (0-100), along with a short rationale.
+
+        ### Employee Profile:
+        {employee_profile}
+
+        ### Job Title:
+        {job.get('title', 'Unknown')}
+
+        ### Job Description:
+        {job.get('description', 'No description provided.')}
+
+        ### Response Format:
+        Match Percentage: <number>%
+        Reason: <1-2 sentence summary>
+        """
+
+def get_job_match_score(employee_profile: str, job: dict) -> dict:
+    prompt = generate_job_match_prompt(employee_profile, job)
+    llm_response = call_llm(prompt)
+
+    # Extract match percentage
+    percentage_match = re.search(r"Match Percentage: (\d+)%", llm_response)
+    score = int(percentage_match.group(1)) if percentage_match else 0
+
+    # Extract reason
+    reason_match = re.search(r"Reason:([\s\S]*)", llm_response)
+    reason = reason_match.group(1).strip() if reason_match else "No explanation provided."
+
+    return {
+        "score": score,
+        "job_title": job.get("title", "Unknown"),
+        "job_description": job.get("description", "Not provided"),
+        "reason": reason
+    }

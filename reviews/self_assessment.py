@@ -1,6 +1,6 @@
 # self_assessment.py
 import streamlit as st
-from employee_db import get_employee
+from data.employee_db import get_employee
 
 # Self-assessment questions for the employee
 self_assessment_questions = [

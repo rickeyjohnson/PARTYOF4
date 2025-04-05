@@ -1,9 +1,10 @@
 import streamlit as st
-from employee_db import create_employee, get_employee
+from data.employee_db import create_employee, get_employee
 from reviews.performance_review import performance_review_chat
 from reviews.self_assessment import self_assessment_chat
 from reviews.peer_review import peer_review_chat
-from fake_ai_api import generate_employee_profile_summary  # Import AI summary function
+from fake_ai_api import generate_employee_profile_summary, get_job_match_score  # Import AI summary function
+from data.job_listing import get_all_jobs
 
 EMPLOYEE_ID = "12345"
 
@@ -60,6 +61,13 @@ def rickey_page(employee_id):
 
             # Display the comprehensive summary
             st.text_area("Employee Comprehensive Summary", employee_summary, height=400)
+
+            result = []
+            for job in get_all_jobs():
+                result.append(get_job_match_score(employee_summary, job))
+
+            st.title('JOB MATCHING')
+            st.write(result)
 
     elif page == "👨‍💼 Performance Review":
         performance_review_chat("12345")

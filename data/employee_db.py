@@ -1,11 +1,12 @@
 # Simulated database of employee profiles
 EMPLOYEE_DB = {}
 
-def create_employee(employee_id, name, role, department, skills, years_experience):
+def create_employee(employee_id, name, role, department, skills, years_experience, pfp_url=""):
     EMPLOYEE_DB[employee_id] = {
         "employee_id": employee_id,
         "name": name,
         "role": role,
+        "pfp": pfp_url,
         "department": department,
         "skills": skills,
         "years_experience": years_experience,
