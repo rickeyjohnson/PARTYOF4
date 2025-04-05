@@ -75,9 +75,6 @@ def page1():
     if st.button("Job Recommendations"):
         st.session_state.current_page = "page_2"
         st.rerun()
-    st.title("Page 1 Content")
-    st.write("This is the content of the first page.")
-
     st.title("Employee Evaluation")
 
     # Create two columns
