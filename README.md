@@ -9,7 +9,6 @@ John
 python -m venv venv
 ```
 
-MACOS/ LINUX
 ```
 source venv/bin/activate
 venv\Scripts\activate.bat
