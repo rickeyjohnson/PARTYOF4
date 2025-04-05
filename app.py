@@ -1,8 +1,8 @@
 import streamlit as st
 from employee_db import create_employee, get_employee
-from pages.performance_review import performance_review_chat
-from pages.self_assessment import self_assessment_chat
-from pages.peer_review import peer_review_chat
+from reviews.performance_review import performance_review_chat
+from reviews.self_assessment import self_assessment_chat
+from reviews.peer_review import peer_review_chat
 from fake_ai_api import generate_employee_profile_summary  # Import AI summary function
 
 EMPLOYEE_ID = "12345"
@@ -72,12 +72,9 @@ def rickey_page(employee_id):
 
 
 def page1():
-    if st.button("Go to Page 2"):
+    if st.button("Job Recommendations"):
         st.session_state.current_page = "page_2"
         st.rerun()
-    st.title("Page 1 Content")
-    st.write("This is the content of the first page.")
-
     st.title("Employee Evaluation")
 
     # Create two columns
@@ -99,7 +96,7 @@ def page1():
     
 
 def page2():
-    if st.button("Page 1"):
+    if st.button("Employee Evaluation"):
         st.session_state.current_page = "page_1"
         st.rerun()
     st.title("Jawn Dough")
