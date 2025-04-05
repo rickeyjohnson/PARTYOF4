@@ -253,7 +253,7 @@ def page2(employee_id):
 
 def main():
     init_employee()
-    # show_sidebar()
+    show_sidebar()
 
     page = st.session_state.get("current_page", "home")
     st.write(page)
@@ -273,14 +273,4 @@ def main():
 
 
 if __name__ == '__main__':
-    init_employee()
-    # show_sidebar()
-
-    if "current_page" not in st.session_state:
-        st.session_state.current_page = "page_1"
-
-    if st.session_state.current_page == "page_1":
-        page1(EMPLOYEE_ID)
-    elif st.session_state.current_page == "page_2":
-        page2(EMPLOYEE_ID)
-
+    main()
