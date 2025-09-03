@@ -7,7 +7,7 @@ This project was built for **North Carolina A&T State University's** spring 2025
 
 **Results:** 2nd Place!
 
-**Presentation:** https://www.canva.com/design/DAGjxaOlO5c/geo5CDG5yGycnbBzGJYQCw/view?utm_content=DAGjxaOlO5c&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h7418261035
+**Presentation WITH DEMO:** https://www.canva.com/design/DAGjxaOlO5c/geo5CDG5yGycnbBzGJYQCw/view?utm_content=DAGjxaOlO5c&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h7418261035
  
 ---
 
